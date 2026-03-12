@@ -531,6 +531,7 @@ const addToCart = async (req, res) => {
   }
 };
 
+
 const updateCart = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
@@ -612,7 +613,7 @@ const clearCart = async (req, res) => {
 
 const placeOrder = async (req, res) => {
   try {
-    const { userId, items, amount, address, reference } = req.body;
+    const { userId, items, amount, address, reference,paymentStatus,paymentMethod } = req.body;
 
     const new_order = await new orderModel({
       userId,
@@ -620,6 +621,8 @@ const placeOrder = async (req, res) => {
       amount,
       address,
       reference,
+      paymentStatus:false,
+      paymentMethod:"cash on delivery"
     });
 
     const order = await new_order.save();
@@ -718,6 +721,30 @@ const contact = async (req, res) => {
   }
 }
 
+const deleteOrder=async(req,res)=>{
+  try {
+    const {orderId}=req.params;
+    const order=await orderModel.findByIdAndDelete(orderId);
+    if(!order){
+      res.json({
+        success:false,
+        message:"Could not delete Order."
+      })
+    }
+    res.json({
+      success:true,
+      message:"Order deleted Successfully.",
+      order
+    })
+    
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
 export {
   registerUser,
   loginUser,
@@ -742,5 +769,6 @@ export {
   artist,
   producer,
   user,
-  contact
+  contact,
+  deleteOrder
 };

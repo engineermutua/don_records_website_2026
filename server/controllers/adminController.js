@@ -2,6 +2,8 @@ import {v2 as cloudinary} from 'cloudinary'
 import merchandiseModel from '../models/merchandiseModel.js';
 import beatModel from '../models/beatModel.js';
 import blogModel from '../models/blogModel.js';
+import userModel from '../models/userModel.js'
+import orderModel from '../models/orderModel.js'
 import { response } from 'express';
 import adminRouter from '../routes/adminRoute.js';
 import jwt from 'jsonwebtoken';
@@ -16,7 +18,7 @@ const createToken=(email)=>{
 
 const addMerchandise=async(req,res)=>{
     try {
-        const {title,description,price,quantity}=req.body;
+        const {title,description,price,quantity,isFeatured}=req.body;
 
         if(!req.files){
             res.json({
@@ -47,7 +49,8 @@ const addMerchandise=async(req,res)=>{
             title,
             description,
             quantity,
-            price
+            price,
+            isFeatured,
         });
 
         const merchandise=await new_merchandise.save();
@@ -77,7 +80,7 @@ const addMerchandise=async(req,res)=>{
 const addBeat=async(req,res)=>{
     try {
 
-        const {title,description,price,tags}=req.body;
+        const {title,description,price,tags,producer,isFeatured}=req.body;
 
         if(!req.files){
             res.json({
@@ -109,6 +112,8 @@ const addBeat=async(req,res)=>{
             description,
             price,
             tags,
+            producer,
+            isFeatured,
             audio:audioUrl
         });
 
@@ -137,7 +142,7 @@ const addBeat=async(req,res)=>{
 
 const addBlog=async(req,res)=>{
     try {
-        const {title,description}=req.body;
+        const {title,description,tags,isFeatured}=req.body;
         if(!req.files){
             res.json({
                 success:false,
@@ -157,6 +162,8 @@ const addBlog=async(req,res)=>{
         const new_blog=new blogModel({
             image:imageUrl,
             title,
+            tags,
+            isFeatured,
             description
         })
 
@@ -267,4 +274,177 @@ const deleteMerchandise=async(req,res)=>{
 }
 
 
-export {addMerchandise,addBeat,addBlog,adminLogin,deleteMerchandise,updateMerchandise}
+const deleteBeat=async(req,res)=>{
+    try {
+        const {beatId}=req.params;
+        const beat=await beatModel.findByIdAndDelete(beatId);
+        if(!beat){
+            res.json({
+                success:false,
+                message:"Could not delete beat."
+            })
+        }
+        
+        res.json({
+            success:true,
+            message:"Beat deleted successfully.",
+            beat
+        })
+    } catch (error) {
+        res.json({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+const deleteBlog=async(req,res)=>{
+    try {
+        const {blogId}=req.params;
+        const blog=await blogModel.findByIdAndDelete(blogId);
+        if(!blog){
+            res.json({
+                success:false,
+                message:"Could not delete blog."
+            })
+        }
+        
+        res.json({
+            success:true,
+            message:"Blog deleted successfully.",
+            blog
+        })
+    } catch (error) {
+        res.json({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+
+const deleteUser=async(req,res)=>{
+    try {
+        const {userId}=req.params;
+        const user=await userModel.findByIdAndDelete(userId);
+        if(!user){
+            res.json({
+                success:false,
+                message:"Could not delete user"
+            });
+        }
+        res.json({
+            success:true,
+            message:"User deleted Successfully.",
+            user
+        })
+        
+    } catch (error) {
+        res.json({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+const validateUser=async(req,res)=>{
+    try {
+        const {userId}=req.params;
+        const user=await userModel.findByIdAndUpdate(userId,{isVerified:true});
+        if(!user){
+            res.json({
+                success:false,
+                message:"Could not find user"
+            });
+        }
+
+        res.json({
+            success:true,
+            message:"User has been verified",
+            user
+        });
+        
+    } catch (error) {
+        res.json({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+const fetchOrders=async(req,res)=>{
+    try {
+        const orders=await orderModel.find({});
+        if(!orders){
+            res.json({
+                success:false,
+                message:"Could not fetch orders"
+            })
+        }        
+        res.json({
+            success:true,
+            message:"Orders Fetched Successfully",
+            orders
+        })
+        
+    } catch (error) {
+        res.json({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+const updateOrderStatus=async(req,res)=>{
+    try {
+        const {status}=req.body;
+        const {orderId}=req.params;
+
+        const order=await orderModel.findByIdAndUpdate(orderId,{status:status});
+
+        if(!order){
+            res.json({
+                success:false,
+                message:"Failed to update Status"
+            });
+        }
+
+        res.json({
+            success:true,
+            message:"Order Updated SuccessFully",
+            order
+        })
+        
+    } catch (error) {
+        res.json({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+const getProduct=async(req,res)=>{
+    try {
+        const {productId}=req.params;
+        const product =(await merchandiseModel.findById({ _id: productId })) || (await beatModel.findById({ _id: productId }));
+        if(!product){
+            res.json({
+                success:false,
+                message:"Product not found"
+            })
+        }
+        res.json({
+            success:true,
+            message:"Product Fetched",
+            product
+        })
+    } catch (error) {
+        res.json({
+            success:false,
+            message:error.message
+        })
+    }
+}
+
+
+export {addMerchandise,addBeat,addBlog,adminLogin,deleteMerchandise,updateMerchandise,deleteBeat,deleteBlog,deleteUser,validateUser,fetchOrders,updateOrderStatus,getProduct}

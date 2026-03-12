@@ -7,6 +7,7 @@ const beatSchema=new mongoose.Schema({
     tags:{type:Object,default:{}},
     price:{type:Number,required:true},
     audio:{type:String,required:true},
+    producer:{type:String,default:"the_don"},
     isFeatured:{type:Boolean,default:false}
 },{minimize:false,timestamps:true})
 

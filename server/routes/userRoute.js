@@ -34,8 +34,8 @@ userRouter.post('/updatecart',authUser,updateCart);
 userRouter.post('/cart',authUser,getCart);
 userRouter.post('/clear',authUser,clearCart);
 //Orders
-userRouter.post('/order',placeOrder);
-userRouter.post('/orders',myOrders);
+userRouter.post('/order',authUser,placeOrder);
+userRouter.post('/orders',authUser,myOrders);
 //mpesa
 userRouter.post('/lipa',generateToken,handleSTKPush)
 userRouter.post('/callback-mpesa',callbackMpesa)

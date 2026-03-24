@@ -190,7 +190,7 @@ const ProfilePage = () => {
               </div>
               <div className="input-class">
                 <label htmlFor="bio">BIO</label>
-                <textarea name="" id="" value={bio} onChange={(e)=>setBio(e.target.value)} placeholder={user.bio}></textarea>
+                <textarea name="" rows={5} id="" value={bio} onChange={(e)=>setBio(e.target.value)} placeholder={user.bio}></textarea>
               </div>
               <div className="input-btn">
                 <button type="submit">Change</button>

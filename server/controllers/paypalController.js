@@ -57,7 +57,7 @@ const paypalPayment=async(req,res)=>{
                 "payment_method":"paypal"
             },
             "redirect_urls":{
-                "return_url":"https://don-records-server-2026.onrender.com/user/paypalSuccess",
+                "return_url":"https://don-records-server-2026.onrender.com/api/user/paypalSuccess",
                 "cancel_url":"https://don-records-server-2026.onrender.com/api/user/paypalCancel"
             },
             "transactions":[{
